@@ -1,0 +1,263 @@
+# ============================================================
+#  JobRadar — Profil kandidat & preferensi
+#  Semua penilaian dihitung dari file ini. Edit di sini,
+#  JANGAN edit kodenya.
+# ============================================================
+
+candidate:
+  name: "JobRadar User"
+  # Total tahun pengalaman profesional sebagai software engineer.
+  years_experience: 4.5
+  # Level/golongan saat ini. Dipakai untuk Seniority Fit.
+  current_level: mid       # junior | mid | senior | lead
+
+  # ---------------------------------------------------------
+  # SKILLS  ->  dipakai untuk "Skills Overlap" (40 poin)
+  # ---------------------------------------------------------
+  # Tier = bobot kepentingan skill itu buat kamu:
+  #   core     = 1.00  senjata utama kamu (paling nyaman & sering dipakai)
+  #   strong   = 0.85  sering dipakai, sudah nyaman
+  #   working  = 0.70  pernah dipakai di project nyata
+  #   familiar = 0.50  tahu konsepnya / pernah baca-baca
+  #
+  # Nama skill harus ada di lib/skills-dictionary.ts
+  # (lihat daftar lengkapnya di sana, atau tambahkan sendiri).
+  skills:
+    core:
+      - react
+      - next.js
+      - typescript
+      - node.js
+      - react native
+      - python
+      - django
+      - javascript
+    strong:
+      - nestjs
+      - express
+      - laravel
+      - php
+      - postgresql
+      - mysql
+      - redis
+      - rest api
+      - docker
+      - ci/cd
+      - git
+    working:
+      - tailwind
+      - redux
+      - expo
+      - prisma
+      - mongodb
+      - graphql
+      - unit testing
+      - e2e testing
+      - websocket
+      - microservices
+      - linux
+    familiar:
+      - kubernetes
+      - aws
+      - gcp
+      - system design
+      - message queue
+      - kafka
+      - flutter
+      - golang
+      - observability
+
+  # ---------------------------------------------------------
+  # ROLE  ->  gate. Judul lowongan harus cocok salah satu
+  # family ini, kalau tidak lowongannya dibuang sebelum dinilai.
+  # Set crawl.require_role_match: false kalau mau mematikan gate.
+  # ---------------------------------------------------------
+  role_families:
+    fullstack:
+      label: "Fullstack Developer"
+      keywords:
+        - fullstack
+        - full stack
+        - full-stack
+        - software engineer
+        - web developer
+        - web engineer
+        - application developer
+    frontend:
+      label: "Frontend Developer"
+      keywords:
+        - frontend
+        - front end
+        - front-end
+        - react developer
+        - reactjs developer
+        - ui engineer
+        - ui developer
+    mobile:
+      label: "Mobile Developer"
+      keywords:
+        - react native
+        - mobile developer
+        - mobile engineer
+        - android developer
+        - ios developer
+        - flutter developer
+    backend:
+      label: "Backend Developer"
+      keywords:
+        - backend
+        - back end
+        - back-end
+        - api developer
+        - node.js developer
+        - python developer
+        - django developer
+        - laravel developer
+        - php developer
+        - nestjs developer
+    analyst:
+      label: "System Analyst"
+      keywords:
+        - system analyst
+        - systems analyst
+        - it analyst
+        - application analyst
+        - technical analyst
+        - business analyst
+        - functional analyst
+    architect:
+      label: "System Architect"
+      keywords:
+        - system architect
+        - solution architect
+        - software architect
+        - technical architect
+        - enterprise architect
+        - integration architect
+
+  # ---------------------------------------------------------
+  # SENIORITY  ->  "Seniority Fit" (25 poin)
+  # ---------------------------------------------------------
+  seniority:
+    target: [mid]                      # level yang kamu incar -> skor penuh
+    acceptable: [junior, senior]       # masih dapat poin, tidak penuh
+    avoid: [intern, fresh graduate, lead, head, manager, director, principal, staff, vp, chief]
+    # Skor per level (0..1). Kamu level Staff (mid-senior), jadi senior masih
+    # dapat poin wajar dan lead/manager tetap dihukum keras.
+    level_scores:
+      intern: 0.05
+      junior: 0.60
+      mid: 1.00
+      senior: 0.75
+      lead: 0.12
+      manager: 0.08
+      unknown: 0.60
+
+  # ---------------------------------------------------------
+  # DOMAIN  ->  "Domain Fit" (20 poin)
+  # Industri yang pernah/sedang kamu kerjakan.
+  # ---------------------------------------------------------
+  domains:
+    - govtech
+    - b2b
+    - startup
+    # Karena pernah Govtech + B2B + Startup, yang bertetangga ini tetap
+    # dapat poin sebagian (0.55) via adjacency, bukan nol.
+    # - enterprise
+    # - healthtech
+    # - edtech
+    # - saas
+    # - fintech
+    # - ecommerce
+
+  # ---------------------------------------------------------
+  # LOCATION & WORK MODE  ->  bagian dari "Practical Fit" (15 poin)
+  # ---------------------------------------------------------
+  location:
+    preferred:                 # skor penuh
+      - jakarta timur
+      - jakarta selatan
+      - jakarta pusat
+    acceptable:                # skor sebagian
+      - jakarta
+      - depok
+      - bogor
+      - tangerang
+      - bekasi
+    accept_remote: true        # remote -> dianggap skor penuh
+    accept_hybrid: true
+    accept_onsite: true
+
+  # ---------------------------------------------------------
+  # SALARY  ->  bagian dari "Practical Fit" (15 poin)
+  # ---------------------------------------------------------
+  salary:
+    currency: IDR
+    period: month
+    hard_min: 9000000          # di bawah ini hampir pasti ditolak
+    target_min: 12000000
+    target_max: 18000000
+    stretch_max: 22000000      # di atas target tapi masih mungkin
+
+# ============================================================
+#  BOBOT PENILAIAN  (harus total 100)
+# ============================================================
+scoring:
+  threshold: 70               # hanya tampilkan skor >= 70
+  weights:
+    skills: 40
+    seniority: 25
+    domain: 20
+    practical: 15
+
+# ============================================================
+#  CRAWLER
+# ============================================================
+crawl:
+  sources: [linkedin, jobstreet]
+  require_role_match: true    # buang lowongan yang judulnya di luar role_families
+
+  # Query yang dijalankan ke tiap sumber.
+  queries:
+    - keywords: "fullstack developer"
+      location: "Jakarta"
+    - keywords: "frontend developer"
+      location: "Jakarta"
+    - keywords: "react developer"
+      location: "Jakarta"
+    - keywords: "react native developer"
+      location: "Jakarta"
+    - keywords: "backend developer"
+      location: "Jakarta"
+    - keywords: "python developer django"
+      location: "Jakarta"
+    - keywords: "laravel developer"
+      location: "Jakarta"
+    - keywords: "nodejs developer"
+      location: "Jakarta"
+    - keywords: "system analyst"
+      location: "Jakarta"
+    - keywords: "system architect"
+      location: "Jakarta"
+    - keywords: "fullstack developer"
+      location: "Depok"
+    - keywords: "frontend developer"
+      location: "Bogor"
+
+  max_pages: 2                # halaman per query
+  page_size: 25
+  max_jobs_per_run: 250       # rem pengaman
+  fetch_details: true         # ambil deskripsi lengkap (lebih akurat, lebih lambat)
+
+  # Rate limiting sopan. Jangan diturunkan drastis — risiko IP diblokir.
+  delay_ms:
+    min: 2500
+    max: 6000
+  request_timeout_ms: 20000
+  max_retries: 2
+  cache_ttl_hours: 12
+
+  # Opsional: pakai cookie LinkedIn kalau endpoint guest mulai diblokir.
+  # Ambil dari browser (DevTools > Network > copy header Cookie).
+  # Simpan di .env sebagai LINKEDIN_COOKIE=... (jangan commit).
+  use_linkedin_cookie: false

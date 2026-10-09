@@ -1,0 +1,31 @@
+{
+  "name": "jobradar",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "NODE_OPTIONS='--disable-warning=ExperimentalWarning' next dev",
+    "build": "NODE_OPTIONS='--disable-warning=ExperimentalWarning' next build",
+    "start": "NODE_OPTIONS='--disable-warning=ExperimentalWarning' next start",
+    "crawl": "bun run scripts/crawl.ts",
+    "crawl:dry": "bun run scripts/crawl.ts --dry-run",
+    "analyze": "bun run scripts/analyze.ts",
+    "test:scoring": "bun run scripts/test-scoring.ts",
+    "db:reset": "bun run scripts/reset-db.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^15.5.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.13",
+    "@types/node": "^22.15.3",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2"
+  }
+}
