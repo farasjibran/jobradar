@@ -16,3 +16,4 @@ next-env.d.ts
 
 # Screenshot sumber (20MB) —versi ringan ada di docs/preview.png
 image.tiff
+.venv-glints/

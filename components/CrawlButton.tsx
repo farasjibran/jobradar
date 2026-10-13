@@ -140,7 +140,7 @@ export function CrawlButton({
           <option value="all" className="bg-zinc-900">Semua sumber</option>
           {sources.map((s) => (
             <option key={s} value={s} className="bg-zinc-900">
-              {s === "linkedin" ? "LinkedIn" : s === "jobstreet" ? "JobStreet" : s}
+              {s === "linkedin" ? "LinkedIn" : s === "jobstreet" ? "JobStreet" : s === "kitalulus" ? "KitaLulus" : s === "glints" ? "Glints" : s}
             </option>
           ))}
         </select>

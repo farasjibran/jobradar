@@ -81,7 +81,7 @@ export default async function Home({ searchParams }: Props) {
   const sourceOptions = (stats?.bySource ?? []).map((s) => ({
     value: s.source,
     label:
-      s.source === "linkedin" ? "LinkedIn" : s.source === "jobstreet" ? "JobStreet" : s.source,
+      s.source === "linkedin" ? "LinkedIn" : s.source === "jobstreet" ? "JobStreet" : s.source === "kitalulus" ? "KitaLulus" : s.source === "glints" ? "Glints" : s.source,
     count: s.count,
   }));
   const familyOptions = (stats?.byFamily ?? [])

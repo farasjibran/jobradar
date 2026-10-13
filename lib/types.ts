@@ -65,11 +65,12 @@ export interface CandidateProfile {
     request_timeout_ms: number;
     max_retries: number;
     cache_ttl_hours: number;
+    max_age_days: number;
     use_linkedin_cookie: boolean;
   };
 }
 
-export type JobSource = "linkedin" | "jobstreet" | "manual";
+export type JobSource = "linkedin" | "jobstreet" | "kitalulus" | "glints" | "manual";
 
 /** Bentuk seragam setelah normalisasi dari sumber mana pun. */
 export interface RawJob {

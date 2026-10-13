@@ -203,7 +203,7 @@ candidate:
 #  BOBOT PENILAIAN  (harus total 100)
 # ============================================================
 scoring:
-  threshold: 70               # hanya tampilkan skor >= 70
+  threshold: 65               # hanya tampilkan skor >= 65
   weights:
     skills: 40
     seniority: 25
@@ -214,7 +214,7 @@ scoring:
 #  CRAWLER
 # ============================================================
 crawl:
-  sources: [linkedin, jobstreet]
+  sources: [linkedin, jobstreet, kitalulus, glints]
   require_role_match: true    # buang lowongan yang judulnya di luar role_families
 
   # Query yang dijalankan ke tiap sumber.
@@ -256,6 +256,7 @@ crawl:
   request_timeout_ms: 20000
   max_retries: 2
   cache_ttl_hours: 12
+  max_age_days: 14            # lowongan lebih tua dari ini dibuang & dihapus dari DB
 
   # Opsional: pakai cookie LinkedIn kalau endpoint guest mulai diblokir.
   # Ambil dari browser (DevTools > Network > copy header Cookie).

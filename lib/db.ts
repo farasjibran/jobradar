@@ -446,6 +446,33 @@ export function setApplied(id: string, applied: boolean): boolean {
   return Number(res.changes) > 0;
 }
 
+/**
+ * Hapus lowongan yang posted_at-nya di luar window (lebih tua dari cutoffMs).
+ * Tanpa tanggal / tanggal tidak valid: dibiarkan (sama dengan filter crawl).
+ * Lowongan yang sudah dilamar tidak dihapus — riwayat lamaran dipertahankan.
+ */
+export function deleteJobsOlderThan(cutoffMs: number): number {
+  const d = getDb();
+  const rows = d
+    .prepare("SELECT id, posted_at FROM jobs WHERE applied = 0 AND posted_at IS NOT NULL AND posted_at != ''")
+    .all() as { id: string; posted_at: string }[];
+  const del = d.prepare("DELETE FROM jobs WHERE id = ?");
+  let removed = 0;
+  d.exec("BEGIN");
+  try {
+    for (const r of rows) {
+      const t = Date.parse(r.posted_at);
+      if (Number.isNaN(t) || t >= cutoffMs) continue;
+      removed += Number(del.run(r.id).changes);
+    }
+    d.exec("COMMIT");
+  } catch (e) {
+    d.exec("ROLLBACK");
+    throw e;
+  }
+  return removed;
+}
+
 export function deleteJobsBySource(source: string): number {
   const d = getDb();
   const res = d.prepare("DELETE FROM jobs WHERE source = ?").run(source);

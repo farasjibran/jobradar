@@ -109,6 +109,8 @@ export const COMPONENT_META: Record<
 export const SOURCE_META: Record<string, { label: string; className: string }> = {
   linkedin: { label: "LinkedIn", className: "bg-[#0a66c2]/15 text-[#5aa9f0] ring-[#0a66c2]/40" },
   jobstreet: { label: "JobStreet", className: "bg-[#e60278]/15 text-[#f472b6] ring-[#e60278]/40" },
+  glints: { label: "Glints", className: "bg-[#0caa41]/15 text-[#4ade80] ring-[#0caa41]/40" },
+  kitalulus: { label: "KitaLulus", className: "bg-[#f59e0b]/15 text-[#fbbf24] ring-[#f59e0b]/40" },
   manual: { label: "Manual", className: "bg-zinc-500/15 text-zinc-300 ring-zinc-500/40" },
 };
 
