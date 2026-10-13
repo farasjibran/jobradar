@@ -75,6 +75,7 @@ export default async function Home({ searchParams }: Props) {
 
   const total = stats?.total ?? 0;
   const passed = stats?.passed ?? 0;
+  const applied = stats?.applied ?? 0;
 
   // Opsi filter dibangun dari data yang ada, bukan hardcode.
   const sourceOptions = (stats?.bySource ?? []).map((s) => ({
@@ -111,9 +112,10 @@ export default async function Home({ searchParams }: Props) {
         </div>
 
         {/* Ringkasan angka */}
-        <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-5">
           <Stat label="Total terkumpul" value={total} />
           <Stat label={`Lolos ≥ ${threshold}`} value={passed} accent="text-emerald-300" />
+          <Stat label="Sudah dilamar" value={applied} accent="text-violet-300" />
           <Stat
             label="Rata-rata skor"
             value={

@@ -368,6 +368,7 @@ export interface Stats {
   total: number;
   passed: number;
   rejected: number;
+  applied: number;
   bySource: { source: string; count: number; passed: number; avg: number }[];
   byFamily: { family: string; label: string; count: number; avg: number }[];
   byVerdict: { verdict: string; count: number }[];
@@ -379,6 +380,7 @@ export function getStats(): Stats {
   const d = getDb();
   const total = (d.prepare("SELECT COUNT(*) AS n FROM jobs").get() as { n: number }).n;
   const passed = (d.prepare("SELECT COUNT(*) AS n FROM jobs WHERE passed = 1").get() as { n: number }).n;
+  const applied = (d.prepare("SELECT COUNT(*) AS n FROM jobs WHERE COALESCE(applied, 0) = 1").get() as { n: number }).n;
 
   const bySource = d
     .prepare(
@@ -423,6 +425,7 @@ export function getStats(): Stats {
     total,
     passed,
     rejected: total - passed,
+    applied,
     bySource,
     byFamily,
     byVerdict,
