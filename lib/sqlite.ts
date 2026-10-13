@@ -31,8 +31,10 @@ export function openDatabase(path: string): Database {
     };
     return new BunDatabase(path);
   }
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { DatabaseSync } = require("node:sqlite") as {
+  // process.getBuiltinModule (Node 22.3+) — sync seperti require, tapi
+  // bundler tidak pernah melihat specifier "node:sqlite" sehingga
+  // Turbopack tidak perlu unsuitable external CommonJS reference.
+  const { DatabaseSync } = process.getBuiltinModule("node:sqlite") as {
     DatabaseSync: new (p: string) => Database;
   };
   return new DatabaseSync(path);
