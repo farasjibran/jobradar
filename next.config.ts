@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 import path from "node:path";
 
 const nextConfig: NextConfig = {
+  // Ikuti rilis perbaikan keamanan secara otomatis untuk menghindari versi
+  // Next.js yang terdampak advisory keamanan.
+  experimental: {
+    agentUpgrade: "security",
+  },
   // node:sqlite is a Node builtin (experimental). Keep it external so
   // webpack/turbopack never tries to bundle or transform it.
   serverExternalPackages: ["node:sqlite"],
