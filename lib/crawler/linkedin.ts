@@ -139,6 +139,10 @@ export interface CrawlLinkedInOptions {
   maxPages: number;
   /** Dikembalikan true kalau lowongan ini tidak perlu detail (menghemat request). */
   shouldFetchDetail?: (job: RawJob) => boolean;
+  /** Dicek di antara halaman/lowongan — true berarti berhenti mengambil data baru. */
+  shouldStop?: () => boolean;
+  /** Dipanggil tiap kali satu lowongan masuk — untuk hitungan progres hidup. */
+  onFetched?: (count: number) => void;
   onProgress?: (msg: string) => void;
 }
 
@@ -151,6 +155,7 @@ export async function crawlLinkedIn(
   const cookieHeader = buildCookieHeader(opts.cookie);
 
   for (let page = 0; page < opts.maxPages; page++) {
+    if (opts.shouldStop?.()) break;
     const start = page * opts.pageSize;
     const url =
       `${SEARCH}?keywords=${encodeURIComponent(query.keywords)}` +
@@ -180,6 +185,7 @@ export async function crawlLinkedIn(
     if (!cards.length) break;
 
     for (const card of cards) {
+      if (opts.shouldStop?.()) break;
       if (seen.has(card.jobId)) continue;
       seen.add(card.jobId);
 
@@ -224,6 +230,7 @@ export async function crawlLinkedIn(
       // Kalau detail gagal diambil, tetap masukkan dengan judul saja —
       // skor skill akan netral, tapi tidak hilang dari daftar.
       out.push(job);
+      opts.onFetched?.(out.length);
     }
 
     opts.onProgress?.(

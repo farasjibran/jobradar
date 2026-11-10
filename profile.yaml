@@ -5,11 +5,11 @@
 # ============================================================
 
 candidate:
-  name: "JobRadar User"
+  name: "Muhammad Farras Jibran"
   # Total tahun pengalaman profesional sebagai software engineer.
-  years_experience: 4.5
+  years_experience: 5
   # Level/golongan saat ini. Dipakai untuk Seniority Fit.
-  current_level: mid       # junior | mid | senior | lead
+  current_level: senior       # junior | mid | senior | lead
 
   # ---------------------------------------------------------
   # SKILLS  ->  dipakai untuk "Skills Overlap" (40 poin)

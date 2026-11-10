@@ -131,6 +131,10 @@ export interface CrawlKitaLulusOptions {
   retries: number;
   fetchDetails: boolean;
   shouldFetchDetail?: (job: RawJob) => boolean;
+  /** Dicek di antara lokasi/lowongan — true berarti berhenti mengambil data baru. */
+  shouldStop?: () => boolean;
+  /** Dipanggil tiap kali satu lowongan masuk — untuk hitungan progres hidup. */
+  onFetched?: (count: number) => void;
   onProgress?: (msg: string) => void;
 }
 
@@ -140,6 +144,7 @@ export async function crawlKitaLulus(opts: CrawlKitaLulusOptions): Promise<RawJo
   const seen = new Set<string>();
 
   for (const loc of KITALULUS_LOCATIONS) {
+    if (opts.shouldStop?.()) break;
     await opts.limiter.wait();
     let html: string;
     try {
@@ -164,6 +169,7 @@ export async function crawlKitaLulus(opts: CrawlKitaLulusOptions): Promise<RawJo
     opts.onProgress?.(`KitaLulus ${loc}: ${cards.length} lowongan`);
 
     for (const card of cards) {
+      if (opts.shouldStop?.()) break;
       if (seen.has(card.slug)) continue;
       seen.add(card.slug);
 
@@ -209,6 +215,7 @@ export async function crawlKitaLulus(opts: CrawlKitaLulusOptions): Promise<RawJo
       }
 
       out.push(job);
+      opts.onFetched?.(out.length);
     }
   }
 

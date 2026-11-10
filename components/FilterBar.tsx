@@ -210,15 +210,12 @@ export function FilterBar({ sources, families, total, shown }: Props) {
 
       {/* Modal loading saat filter berubah */}
       {pending && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-zinc-950/90 px-8 py-6 shadow-2xl">
-            <div className="relative h-10 w-10">
-              <div className="absolute inset-0 animate-ping rounded-full bg-violet-500/30" />
-              <svg className="animate-spin text-violet-400" width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2.5" opacity=".2" />
-                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-              </svg>
-            </div>
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4">
+          <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-zinc-950 px-8 py-6 shadow-2xl">
+            <svg className="animate-spin text-violet-400" width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2.5" opacity=".2" />
+              <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
             <p className="text-sm font-medium text-zinc-200">
               Sedang memfilter kerjaan dan job…
             </p>

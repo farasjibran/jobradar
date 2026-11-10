@@ -169,6 +169,10 @@ export interface CrawlJobStreetOptions {
   pageSize: number;
   maxPages: number;
   shouldFetchDetail?: (job: RawJob) => boolean;
+  /** Dicek di antara halaman/lowongan — true berarti berhenti mengambil data baru. */
+  shouldStop?: () => boolean;
+  /** Dipanggil tiap kali satu lowongan masuk — untuk hitungan progres hidup. */
+  onFetched?: (count: number) => void;
   onProgress?: (msg: string) => void;
 }
 
@@ -181,6 +185,7 @@ export async function crawlJobStreet(
   const pageSize = query.pageSize ?? opts.pageSize;
 
   for (let page = 1; page <= opts.maxPages; page++) {
+    if (opts.shouldStop?.()) break;
     const params = new URLSearchParams({
       siteKey: "ID-Main",
       sourcesystem: "houston",
@@ -216,6 +221,7 @@ export async function crawlJobStreet(
     if (!items.length) break;
 
     for (const item of items) {
+      if (opts.shouldStop?.()) break;
       const job = mapSearchItem(item);
       if (!job || seen.has(job.externalId)) continue;
       seen.add(job.externalId);
@@ -249,6 +255,7 @@ export async function crawlJobStreet(
       }
 
       out.push(job);
+      opts.onFetched?.(out.length);
     }
 
     opts.onProgress?.(

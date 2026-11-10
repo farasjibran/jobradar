@@ -11,6 +11,7 @@ import { join } from "node:path";
 import {
   finishCrawlRun,
   startCrawlRun,
+  updateCrawlRunProgress,
   deleteJobsOlderThan,
   upsertScoredJobs,
 } from "../db";
@@ -45,6 +46,11 @@ export interface CrawlOptions {
   sources?: string[];
   /** Paksa refresh (abaikan cache). */
   noCache?: boolean;
+  /**
+   * Dicek di antara query/sumber. Kalau true, crawl berhenti mengambil data
+   * baru lalu langsung menyimpan apa yang sudah didapat.
+   */
+  shouldStop?: () => boolean;
   onProgress?: (msg: string) => void;
 }
 
@@ -78,7 +84,7 @@ export async function runCrawl(
   opts: CrawlOptions = {},
 ): Promise<CrawlSummary> {
   const startedMs = Date.now();
-  const log = opts.onProgress ?? (() => {});
+  const progress = opts.onProgress ?? (() => {});
   const cfg = profile.crawl;
   const sources = opts.sources ?? cfg.sources;
 
@@ -91,6 +97,17 @@ export async function runCrawl(
   const errors: string[] = [];
   const bySource: Record<string, number> = {};
   const raw: RawJob[] = [];
+
+  // Counter hidup: crawler memanggil onFetched() tiap kali satu lowongan
+  // didapat, dan hasilnya ditulis ke DB maks. sekali per 700 ms supaya UI
+  // bisa menampilkan hitungan berjalan tanpa menunggu crawl selesai.
+  let lastProgressMs = 0;
+  const log = progress;
+  const trackProgress = (total: number): void => {
+    if (runId <= 0 || Date.now() - lastProgressMs < 700) return;
+    lastProgressMs = Date.now();
+    updateCrawlRunProgress(runId, total);
+  };
 
   // ---- Gate awal: buang lowongan yang judulnya jelas di luar role ----
   // Ini menghemat banyak request detail.
@@ -112,6 +129,8 @@ export async function runCrawl(
         retries: cfg.max_retries,
         fetchDetails: cfg.fetch_details,
         shouldFetchDetail,
+        shouldStop: opts.shouldStop,
+        onFetched: (n) => trackProgress(raw.length + n),
         onProgress: log,
       });
       raw.push(...jobs);
@@ -126,12 +145,17 @@ export async function runCrawl(
   }
 
   for (const q of queries) {
+    if (opts.shouldStop?.()) {
+      log("Dihentikan lebih awal — menyimpan lowongan yang sudah didapat.");
+      break;
+    }
     if (fetched >= cfg.max_jobs_per_run) {
       log(`Batas ${cfg.max_jobs_per_run} lowongan tercapai — berhenti mengambil.`);
       break;
     }
 
     for (const source of sources) {
+      if (opts.shouldStop?.()) break;
       if (source === "kitalulus") continue; // sudah dipindai di atas
       try {
         if (source === "linkedin") {
@@ -148,6 +172,8 @@ export async function runCrawl(
               pageSize: cfg.page_size,
               maxPages: cfg.max_pages,
               shouldFetchDetail,
+              shouldStop: opts.shouldStop,
+              onFetched: (n) => trackProgress(raw.length + n),
               onProgress: log,
             },
           );
@@ -163,6 +189,8 @@ export async function runCrawl(
               delayMax: cfg.delay_ms.max,
               fetchDetails: cfg.fetch_details,
               shouldFetchDetail,
+              shouldStop: opts.shouldStop,
+              onFetched: (n) => trackProgress(raw.length + n),
               onProgress: log,
             },
           );
@@ -182,6 +210,8 @@ export async function runCrawl(
               pageSize: cfg.page_size,
               maxPages: cfg.max_pages,
               shouldFetchDetail,
+              shouldStop: opts.shouldStop,
+              onFetched: (n) => trackProgress(raw.length + n),
               onProgress: log,
             },
           );

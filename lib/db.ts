@@ -506,6 +506,16 @@ export function startCrawlRun(sources: string[], queries: number): number {
   return Number(res.lastInsertRowid);
 }
 
+/**
+ * Tulis progres sementara selama crawl berjalan, supaya UI bisa menampilkan
+ * jumlah lowongan yang sudah didapat tanpa menunggu crawl selesai.
+ */
+export function updateCrawlRunProgress(id: number, fetched: number): void {
+  getDb()
+    .prepare("UPDATE crawl_runs SET fetched = ? WHERE id = ? AND finished_at IS NULL")
+    .run(fetched, id);
+}
+
 export function finishCrawlRun(
   id: number,
   data: {

@@ -16,6 +16,23 @@ import { loadProfile } from "../lib/profile";
 import { runCrawl } from "../lib/crawler";
 import { closeDb } from "../lib/db";
 
+/**
+ * Berhenti atas permintaan user (tombol "Selesaikan sekarang"). Crawl tidak
+ * dibunuh paksa: proses berhenti mengambil data baru lalu tetap menyimpan
+ * lowongan yang sudah didapat. SIGTERM kedua = keluar paksa.
+ */
+let stopRequested = false;
+function requestStop(): void {
+  if (stopRequested) {
+    console.log("\nBerhenti paksa — hasil yang sudah didapat belum disimpan.");
+    process.exit(130);
+  }
+  stopRequested = true;
+  console.log("\nPermintaan berhenti — menyimpan lowongan yang sudah didapat…");
+}
+process.on("SIGTERM", requestStop);
+process.on("SIGINT", requestStop);
+
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
   if (i === -1) return undefined;
@@ -55,6 +72,7 @@ async function main() {
     noCache,
     limitQueries,
     sources,
+    shouldStop: () => stopRequested,
     onProgress: (m) => console.log(m),
   });
 

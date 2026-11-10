@@ -51,10 +51,51 @@ export async function GET() {
 }
 
 /**
+ * Hentikan crawl yang sedang berjalan.
+ *
+ * Proses crawler tidak dibunuh paksa: ia diberi SIGTERM, berhenti mengambil
+ * data baru, lalu menyimpan lowongan yang sudah didapat — jadi hasil yang
+ * sudah terkumpul tetap masuk database.
+ */
+export async function DELETE() {
+  try {
+    if (!(await isCrawlRunning())) {
+      return NextResponse.json({ ok: true, stopped: 0 });
+    }
+
+    const { execSync } = await import("node:child_process");
+    const out = execSync('pgrep -f "scripts/crawl.ts" || true', { encoding: "utf8" }).trim();
+    const pids = out
+      ? out
+          .split(/\s+/)
+          .map(Number)
+          .filter((pid) => Number.isFinite(pid) && pid > 0)
+      : [];
+
+    for (const pid of pids) {
+      try {
+        process.kill(pid, "SIGTERM");
+      } catch {
+        // Proses sudah mati — tidak masalah.
+      }
+    }
+
+    return NextResponse.json({ ok: true, stopped: pids.length });
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, error: e instanceof Error ? e.message : "Gagal menghentikan crawl" },
+      { status: 500 },
+    );
+  }
+}
+
+/**
  * Jalankan crawl.
  *
  * Body JSON (opsional):
- *   { "source": "jobstreet" | "linkedin", "limit": 2, "noCache": true, "dryRun": true }
+ *   { "source": "jobstreet" | "jobstreet,glints", "limit": 2, "noCache": true, "dryRun": true }
+ *
+ * `source` boleh berisi beberapa sumber dipisah koma (lihat scripts/crawl.ts).
  *
  * Peringatan: crawl penuh bisa memakan waktu beberapa menit karena jeda
  * sopan 2.5-6 detik per request. Untuk penggunaan rutin, lebih baik pakai

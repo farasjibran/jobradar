@@ -105,6 +105,10 @@ export interface CrawlGlintsOptions {
   delayMax: number;
   fetchDetails: boolean;
   shouldFetchDetail?: (job: RawJob) => boolean;
+  /** Dicek di antara lowongan — true berarti berhenti mengambil data baru. */
+  shouldStop?: () => boolean;
+  /** Dipanggil tiap kali satu lowongan masuk — untuk hitungan progres hidup. */
+  onFetched?: (count: number) => void;
   onProgress?: (msg: string) => void;
 }
 
@@ -122,8 +126,12 @@ export async function crawlGlints(query: GlintsQuery, opts: CrawlGlintsOptions):
 
   const out: RawJob[] = [];
   for (const item of items) {
+    if (opts.shouldStop?.()) break;
     const job = mapSearchItem(item);
-    if (job) out.push(job);
+    if (job) {
+      out.push(job);
+      opts.onFetched?.(out.length);
+    }
   }
 
   const need = out.filter(
